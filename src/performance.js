@@ -75,6 +75,10 @@ export class Performance {
     return this.takes[low];
   }
 
+  sourceTime(elapsed) {
+    return cueTime(this.takeAt(elapsed), elapsed, this.cues.duration);
+  }
+
   poseAt(elapsed, out) {
     const take = this.takeAt(elapsed);
     const { step, frames } = this.cues.motion;

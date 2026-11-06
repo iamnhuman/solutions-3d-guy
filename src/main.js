@@ -38,7 +38,7 @@ async function start() {
     return;
   }
 
-  const character = await loadCharacter(readModel());
+  const character = await loadCharacter(readModel(), __EYE_MOTION__);
   studio.scene.add(character.scene);
   const [seed] = crypto.getRandomValues(new Uint32Array(1));
   const timeline = new Performance(cues, seed);

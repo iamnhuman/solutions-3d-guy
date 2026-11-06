@@ -1,18 +1,22 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
+import { fitReferenceEyes } from './fit-eyes.mjs';
 
 const root = new URL('../', import.meta.url);
 const source = (path, encoding) => readFile(new URL(path, root), encoding);
-const [template, css, model, threeLicense] = await Promise.all([
+const [template, css, model, threeLicense, cues, outlines] = await Promise.all([
   source('src/page.html', 'utf8'),
   source('src/style.css', 'utf8'),
   source('assets/character.glb'),
   source('node_modules/three/LICENSE', 'utf8'),
+  source('assets/reference-cues.json', 'utf8'),
+  source('assets/eye-contours.json', 'utf8'),
 ]);
 if (model.toString('ascii', 0, 4) !== 'glTF' || model.readUInt32LE(8) !== model.length) {
   throw new Error('assets/character.glb is not a complete GLB file');
 }
+const eyeCurves = await fitReferenceEyes(model, JSON.parse(cues), JSON.parse(outlines));
 
 const result = await build({
   absWorkingDir: fileURLToPath(root),
@@ -23,6 +27,7 @@ const result = await build({
   platform: 'browser',
   minify: true,
   legalComments: 'inline',
+  define: { __EYE_MOTION__: JSON.stringify(eyeCurves) },
   write: false,
 });
 

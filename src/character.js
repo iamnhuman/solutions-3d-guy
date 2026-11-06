@@ -1,15 +1,16 @@
 import { Euler, Quaternion } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { makeDabPose } from './dab.js';
+import { EyeMotion } from './eyes.js';
 import { clamp } from './performance.js';
 
-export async function loadCharacter(buffer) {
+export async function loadCharacter(buffer, eyeCurves) {
   const { scene } = await new GLTFLoader().parseAsync(buffer, '');
-  return new ClayCharacter(scene);
+  return new ClayCharacter(scene, eyeCurves);
 }
 
 class ClayCharacter {
-  constructor(scene) {
+  constructor(scene, eyeCurves) {
     this.scene = scene;
     const parts = new Map();
     scene.traverse(object => {
@@ -34,6 +35,8 @@ class ClayCharacter {
     this.dab = makeDabPose(this.headRest, this.arms);
     this.body = part('Body');
     this.mouth = part('Mouth');
+    this.eyes = [part('Eye.L'), part('Eye.R')];
+    this.eyeMotion = eyeCurves ? new EyeMotion(this.eyes, eyeCurves) : null;
     this.pose = new Float64Array(6);
     this.delayed = new Float64Array(6);
     this.angles = new Euler(0, 0, 0, 'YXZ');
@@ -79,5 +82,6 @@ class ClayCharacter {
     this.body.morphTargetInfluences[this.body.morphTargetDictionary.Breath] = 0.31 + 0.29 * breath;
     this.mouth.morphTargetInfluences[this.mouth.morphTargetDictionary.MouthNarrow] = clamp(-mouth, 0, 1);
     this.mouth.morphTargetInfluences[this.mouth.morphTargetDictionary.MouthRound] = clamp(mouth, 0, 1);
+    this.eyeMotion?.update(performance.sourceTime(time));
   }
 }

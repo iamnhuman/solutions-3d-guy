@@ -7,21 +7,33 @@ import {
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { clamp } from './performance.js';
 
-const ELEVATION = 0.185;
+export const ELEVATION = 0.185;
+export const STUDIO_LIGHTS = {
+  ambient: Math.PI * 0.325,
+  bounce: { direction: [-0.08, 0.20, 1], intensity: 0.48 },
+  key: { direction: [-0.43, 1, 0.54], intensity: 2.13 },
+};
 const PIXELS_PER_UNIT = 242.75;
 const STUDIO_COLOR = 0xcdcdcd;
 const REFERENCE_HEIGHT = 1350 / PIXELS_PER_UNIT;
 const TARGET_Y = 1.375;
+const FRAME_CENTER_SHIFT = 19;
+const FLOOR_PIXEL_Y = 1070;
+
+export function projectReferencePoint(point) {
+  return [540 - FRAME_CENTER_SHIFT + PIXELS_PER_UNIT * point.x,
+    FLOOR_PIXEL_Y - PIXELS_PER_UNIT * (Math.cos(ELEVATION)*point.y - Math.sin(ELEVATION)*point.z)];
+}
 
 function lightStudio(scene, softShadows) {
-  scene.add(new AmbientLight(0xffffff, Math.PI * 0.325));
-  const bounce = new DirectionalLight(0xffffff, 0.48);
-  bounce.position.set(-0.08, 0.20, 1);
+  scene.add(new AmbientLight(0xffffff, STUDIO_LIGHTS.ambient));
+  const bounce = new DirectionalLight(0xffffff, STUDIO_LIGHTS.bounce.intensity);
+  bounce.position.set(...STUDIO_LIGHTS.bounce.direction);
   scene.add(bounce);
 
-  const key = new DirectionalLight(0xffffff, 2.13);
+  const key = new DirectionalLight(0xffffff, STUDIO_LIGHTS.key.intensity);
   key.target.position.set(0, 1.15, 0);
-  key.position.set(-0.43, 1, 0.54).multiplyScalar(7).add(key.target.position);
+  key.position.set(...STUDIO_LIGHTS.key.direction).multiplyScalar(7).add(key.target.position);
   key.castShadow = true;
   key.shadow.mapSize.set(768, 768);
   Object.assign(key.shadow.camera, { left: -2.95, right: 3.25, top: 3.0, bottom: -3.0, near: 0.4, far: 15 });
@@ -158,8 +170,8 @@ export class Studio {
     const aspect = width / height;
     const halfHeight = REFERENCE_HEIGHT * 0.5;
     const halfWidth = halfHeight * aspect;
-    const centerX = 19 / PIXELS_PER_UNIT * Math.min(1, aspect / 0.8);
-    const centerY = (1070 - 675) / PIXELS_PER_UNIT - TARGET_Y * Math.cos(ELEVATION);
+    const centerX = FRAME_CENTER_SHIFT / PIXELS_PER_UNIT * Math.min(1, aspect / 0.8);
+    const centerY = (FLOOR_PIXEL_Y - 675) / PIXELS_PER_UNIT - TARGET_Y * Math.cos(ELEVATION);
     Object.assign(this.camera, {
       left: -halfWidth + centerX, right: halfWidth + centerX,
       top: halfHeight + centerY, bottom: -halfHeight + centerY,
