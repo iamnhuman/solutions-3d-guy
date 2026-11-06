@@ -1,5 +1,6 @@
 import cues from '../assets/reference-cues.json';
 import { loadCharacter } from './character.js';
+import { dabWeight, DAB_DURATION } from './dab.js';
 import { Performance } from './performance.js';
 import { StudioSound } from './sound.js';
 import { Studio } from './studio.js';
@@ -10,6 +11,7 @@ const status = document.querySelector('#status');
 const audioNotice = document.querySelector('#audio-notice');
 const soundButton = document.querySelector('#sound');
 const resetButton = document.querySelector('#reset');
+const dabButton = document.querySelector('#dab');
 const soundLabel = soundButton.querySelector('span');
 
 function readModel() {
@@ -24,7 +26,7 @@ function showError(message, error) {
   console.error(error);
   status.textContent = message;
   status.hidden = false;
-  soundButton.disabled = resetButton.disabled = true;
+  soundButton.disabled = resetButton.disabled = dabButton.disabled = true;
 }
 
 async function start() {
@@ -45,13 +47,19 @@ async function start() {
   let raf = 0;
   let running = true;
   let soundUnavailable = false;
+  let dabStartedAt = null;
   const visualTime = () => Math.max(0, performance.now() / 1000 - origin);
 
   function frame(now) {
     if (!running) return;
     try {
       const elapsed = sound.enabled ? sound.time() : Math.max(0, now / 1000 - origin);
-      character.update(elapsed, timeline);
+      const gestureTime = dabStartedAt === null ? 0 : (now - dabStartedAt) / 1000;
+      if (gestureTime >= DAB_DURATION) {
+        dabStartedAt = null;
+        dabButton.disabled = false;
+      }
+      character.update(elapsed, timeline, dabStartedAt === null ? 0 : dabWeight(gestureTime));
       studio.render(now);
       raf = requestAnimationFrame(frame);
     } catch (error) {
@@ -61,6 +69,11 @@ async function start() {
     }
   }
 
+  dabButton.addEventListener('click', () => {
+    if (!running || dabStartedAt !== null) return;
+    dabStartedAt = performance.now();
+    dabButton.disabled = true;
+  });
   resetButton.addEventListener('click', () => studio.reset());
   soundButton.addEventListener('click', async () => {
     if (!running) return;
@@ -95,7 +108,7 @@ async function start() {
   });
 
   status.hidden = true;
-  soundButton.disabled = resetButton.disabled = false;
+  soundButton.disabled = resetButton.disabled = dabButton.disabled = false;
   frame(origin * 1000);
 }
 

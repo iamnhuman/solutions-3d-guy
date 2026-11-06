@@ -53,7 +53,10 @@ body { margin: 0; }
 
 .buttons {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 5px;
+  max-width: 100%;
   padding: 3px;
   border: 1px solid #a9a9a9;
   border-radius: 13px;
@@ -95,6 +98,12 @@ button svg {
 #sound span { min-width: 86px; text-align: start; }
 #sound[data-playing='false'] .speaker-waves,
 #sound[data-playing='true'] .speaker-mute { display: none; }
+
+@media (max-width: 400px) {
+  .buttons { gap: 2px; }
+  button { padding-inline: 6px; }
+  #sound span { min-width: 0; }
+}
 
 .status {
   position: absolute;
