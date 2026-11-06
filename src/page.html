@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#cdcdcd">
+  <title>Серый персонаж</title>
+  <!-- STUDIO_STYLE -->
+</head>
+<body>
+  <main id="stage">
+    <canvas id="view" tabindex="0" aria-label="Трёхмерный серый персонаж. Стрелки вращают вид, плюс и минус меняют масштаб, Home сбрасывает вид."></canvas>
+    <p id="status" class="status" role="status">Подготовка сцены…</p>
+    <div class="controls" aria-label="Управление сценой" role="group">
+      <p class="hint">Потяни для вращения. Колесо меняет масштаб.</p>
+      <div class="buttons">
+        <button id="sound" type="button" data-playing="false" disabled>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M4 10v4h4l4 3.5v-11L8 10H4Z"/>
+            <path class="speaker-waves" d="M15 9.2a4.1 4.1 0 0 1 0 5.6M17.5 6.7a7.4 7.4 0 0 1 0 10.6"/>
+            <path class="speaker-mute" d="m16 10 4 4m0-4-4 4"/>
+          </svg>
+          <span>Включить звук</span>
+        </button>
+        <button id="reset" type="button" disabled>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M5 11a7 7 0 1 1 1.9 5.9M5 11V6m0 5h5"/>
+          </svg>
+          <span>Сбросить вид</span>
+        </button>
+      </div>
+      <p id="audio-notice" class="audio-notice" role="status" hidden></p>
+    </div>
+  </main>
+  <!-- CHARACTER_DATA -->
+  <!-- STUDIO_SCRIPT -->
+</body>
+</html>

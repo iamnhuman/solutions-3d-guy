@@ -1,0 +1,124 @@
+:root {
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #cdcdcd;
+  color: #323232;
+  font-synthesis: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+
+#stage {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+}
+
+#view {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+#stage[data-dragging] #view { cursor: grabbing; }
+
+#view:focus-visible {
+  outline: 1px solid #686868;
+  outline-offset: -5px;
+}
+
+.controls {
+  position: absolute;
+  inset-inline: 12px;
+  bottom: max(15px, env(safe-area-inset-bottom));
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  pointer-events: none;
+  text-align: center;
+}
+
+.hint {
+  margin: 0;
+  color: #4d4d4d;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.buttons {
+  display: flex;
+  gap: 5px;
+  padding: 3px;
+  border: 1px solid #a9a9a9;
+  border-radius: 13px;
+  background: #e5e5e5e6;
+  pointer-events: auto;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: inherit;
+  font: 500 12px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) { background: #d6d6d6; }
+button:active:not(:disabled) { background: #c7c7c7; }
+button:focus-visible { outline: 2px solid #494949; outline-offset: 0; }
+button:disabled { opacity: 0.53; cursor: default; }
+
+button svg {
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#sound span { min-width: 86px; text-align: start; }
+#sound[data-playing='false'] .speaker-waves,
+#sound[data-playing='true'] .speaker-mute { display: none; }
+
+.status {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: min(86vw, 350px);
+  transform: translate(-50%, -50%);
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.audio-notice {
+  max-width: 280px;
+  margin: 0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #e5e5e5;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+@media (pointer: coarse) {
+  .hint { display: none; }
+  button { min-height: 44px; }
+}
